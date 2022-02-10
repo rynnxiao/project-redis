@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ title }}</title>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+  <script src="https://playground.abysscorp.org/chartjs/livecharts/dist/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+        $(document).ready(function () {
+        const config_line = {
+            data: {
+                labels: [],
+                datasets: [
+                {
+                  type: 'line',
+                  label: "",
+                  backgroundColor: 'red',
+                  borderColor: 'red',
+                  data: [],
+                  fill: false,
+                },
+                {
+                  type: 'line',
+                  label: "",
+                  backgroundColor: 'green',
+                  borderColor: 'green',
+                  data: [],
+                  fill: false,
+                },
+                {
+                  type: 'line',
+                  label: "",
+                  backgroundColor: 'yellow',
+                  borderColor: 'yellow',
+                  data: [],
+                  fill: false,
+                },
+                {
+                  type: 'line',
+                  label: "",
+                  backgroundColor: 'pink',
+                  borderColor: 'pink',
+                  data: [],
+                  fill: false,
+                },
+              ],
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Redis Backed Data'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        };
+        const context = document.getElementById('chart0').getContext('2d');
+
+        const lineChart = new Chart(context, config_line);
+
+        const line_source = new EventSource("/line-data");
+
+        line_source.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (config_line.data.labels.length === 30) {
+              config_line.data.labels.shift();
+                for(let i = 0; i < data.value.length; i++){
+                  config_line.data.datasets[i].data.shift();
+                }
+            }
+            config_line.data.labels.push(data.time);
+            for(let i = 0; i < data.value.length; i++){
+              if(config_line.data.datasets[i].type === "line"){
+                config_line.data.datasets[i].data.push(data.value[i]);
+                config_line.data.datasets[i].label = data.label[i];
+              }
+            }
+            lineChart.update();
+        }
+
+    });
+  </script>
+</head>
+
+<body>
+  <center>
+    <h1>{{ title }}</h1>
+  </center>
+  <div class="split left">
+    <div class="centered">
+      <h2>Price Change</h2>
+      <canvas id="chart0" height="100"></canvas>
+    </div>
+  </div>
+  <div class="split right">
+    <div class="centered">
+      <h2>Vol</h2>
+      <canvas id="chart1" height="100"></canvas>
+    </div>
+  </div>
+
+</body>
+</html>
