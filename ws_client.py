@@ -10,9 +10,9 @@ from requests.auth import AuthBase
 from websocket import create_connection
 from config import CRYPTO, CRYPTO_CHANGE, CRYPTO_VOL
 
-PASSPHARSE = "u09irmmo81"
-API_SECRET = "Mh+26roMz1ujhl5BBUJHYEk7H7BF0Q7Pr9uTOCRYMA5vONmwpMlE5bb6zAbFWNc0rMl1rQIL6mMYHnV30cwrZA=="
-API_KEY = "ea528fa582c6882fc260cbeafca44edd"
+PASSPHARSE = ""
+API_SECRET = ""
+API_KEY = ""
 
 def get_auth_headers(timestamp, message, api_key, secret_key, passphrase):
     message = message.encode('ascii')
